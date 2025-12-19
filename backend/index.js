@@ -4,6 +4,7 @@ import { connectDB } from './db/dbconnect.js';
 import userRouter from './routes/user.routes.js';
 import courseRouter from './routes/course.routes.js';
 import categoryRouter from './routes/category.routes.js';
+import enrollmentRouter from './routes/enrollment.routes.js';
 import cors from 'cors';
 
 const app = express();
@@ -15,6 +16,7 @@ connectDB();
 app.use('/api/user', userRouter);
 app.use('/api/courses', courseRouter);
 app.use('/api/categories', categoryRouter);
+app.use('/api/enrollments', enrollmentRouter);
 
 
 const PORT = env.PORT;
