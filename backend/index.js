@@ -9,6 +9,8 @@ import paymentRouter from './routes/payment.routes.js';
 import progressRouter from './routes/progress.routes.js';
 import reviewRouter from './routes/review.routes.js';
 import sectionRouter from './routes/section.routes.js';
+import wishlistRouter from './routes/wishlist.routes.js';
+import lectureRouter from './routes/lecture.routes.js';
 import cors from 'cors';
 
 const app = express();
@@ -25,6 +27,8 @@ app.use('/api/payments', paymentRouter);
 app.use('/api/progress', progressRouter);
 app.use('/api/reviews', reviewRouter);
 app.use('/api/sections', sectionRouter);
+app.use('/api/wishlist', wishlistRouter);
+app.use('/api/lectures', lectureRouter);
 
 
 const PORT = env.PORT;
