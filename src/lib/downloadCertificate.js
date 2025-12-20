@@ -1,92 +1,83 @@
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { createRoot } from 'react-dom/client';
-import { CertificateTemplate } from '../components/ui/CertificateTemplate';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { createRoot } from "react-dom/client";
+import React from "react";
+import { CertificateTemplate } from "../components/ui/CertificateTemplate";
 
-import React from 'react';
+export const downloadCertificate = async ({
+  userName,
+  courseTitle,
+  completionDate,
+  certificateId,
+  instructorName,
+}) => {
+  const WIDTH = 1600;
+  const HEIGHT = 1000;
 
-/**
- * Download certificate as PDF
- * Renders the actual CertificateTemplate component to ensure consistency
- * 
- * @param {Object} certificateData - Certificate information
- * @param {string} certificateData.userName - Student name
- * @param {string} certificateData.courseTitle - Course title
- * @param {string} certificateData.completionDate - Formatted completion date
- * @param {string} certificateData.certificateId - Unique certificate ID
- * @param {string} certificateData.instructorName - Instructor name
- * @returns {Promise<void>}
- */
-export const downloadCertificate = async (certificateData) => {
-  const { userName, courseTitle, completionDate, certificateId, instructorName } = certificateData;
+  // Temp container
+  const temp = document.createElement("div");
+  temp.style.position = "fixed";
+  temp.style.top = "0";
+  temp.style.left = "0";
+  temp.style.width = `${WIDTH}px`;
+  temp.style.height = `${HEIGHT}px`;
+  temp.style.background = "#ffffff";
+  temp.style.opacity = "0";
+  temp.style.pointerEvents = "none";
+  temp.style.margin = "0";
+  temp.style.padding = "0";
+  temp.style.overflow = "hidden";
+  document.body.appendChild(temp);
 
-  // Create temporary container for rendering the React component
-  const tempContainer = document.createElement('div');
-  tempContainer.style.position = 'fixed';
-  tempContainer.style.left = '-9999px';
-  tempContainer.style.top = '0';
-  tempContainer.style.width = '1400px'; // Larger for better quality
-  tempContainer.style.height = '990px'; // A4 landscape aspect ratio (1.414:1)
-  tempContainer.style.zIndex = '-1';
-  document.body.appendChild(tempContainer);
+  const rootEl = document.createElement("div");
+  rootEl.style.width = "100%";
+  rootEl.style.height = "100%";
+  temp.appendChild(rootEl);
 
-  // Create a wrapper for the certificate
-  const certificateWrapper = document.createElement('div');
-  certificateWrapper.style.width = '100%';
-  certificateWrapper.style.height = '100%';
-  tempContainer.appendChild(certificateWrapper);
+  const root = createRoot(rootEl);
 
-  // Render the React component
-  const root = createRoot(certificateWrapper);
-  
-  // Wrap in a promise to wait for rendering
-  await new Promise((resolve) => {
-    root.render(
-      React.createElement(CertificateTemplate, {
-        userName,
-        courseTitle,
-        completionDate,
-        certificateId,
-        instructorName,
-      })
-    );
-    // Wait for render and styles to apply
-    setTimeout(resolve, 500);
-  });
+  root.render(
+    React.createElement(CertificateTemplate, {
+      userName,
+      courseTitle,
+      completionDate,
+      certificateId,
+      instructorName,
+    })
+  );
 
-  // Capture as canvas with high quality
-  const canvas = await html2canvas(certificateWrapper, {
-    scale: 2.5,
+  // Wait for render + fonts
+  await new Promise((r) => requestAnimationFrame(r));
+  await new Promise((r) => requestAnimationFrame(r));
+  if (document.fonts?.ready) await document.fonts.ready;
+
+  // Capture
+  const canvas = await html2canvas(rootEl, {
+    scale: 3,
+    width: WIDTH,
+    height: HEIGHT,
+    backgroundColor: "#ffffff",
     useCORS: true,
-    logging: false,
-    backgroundColor: '#ffffff',
-    width: certificateWrapper.offsetWidth,
-    height: certificateWrapper.offsetHeight,
+    removeContainer: true,
   });
 
-  // Cleanup
   root.unmount();
-  document.body.removeChild(tempContainer);
+  document.body.removeChild(temp);
 
-  // Convert to PDF
-  const imgData = canvas.toDataURL('image/png', 1.0);
+  // PDF (exact size)
   const pdf = new jsPDF({
-    orientation: 'landscape',
-    unit: 'mm',
-    format: 'a4',
+    orientation: "landscape",
+    unit: "px",
+    format: [WIDTH, HEIGHT],
   });
 
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = pdf.internal.pageSize.getHeight();
+  pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, WIDTH, HEIGHT);
 
-  // Add image to fill the entire page
-  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, '', 'FAST');
+  const fileName = `skillcert_${userName
+    .replace(/[^a-z0-9]/gi, "_")
+    .toLowerCase()}_${courseTitle
+    .replace(/[^a-z0-9]/gi, "_")
+    .toLowerCase()}.pdf`;
 
-  // Generate filename
-  const sanitizedCourseName = courseTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-  const sanitizedUserName = userName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-  const filename = `skillcert_certificate_${sanitizedUserName}_${sanitizedCourseName}.pdf`;
-
-  // Download PDF
-  pdf.save(filename);
+  pdf.save(fileName);
 };
