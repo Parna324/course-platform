@@ -18,6 +18,7 @@ import { InstructorDashboardPage } from './pages/InstructorDashboardPage';
 import { CourseFormPage } from './pages/CourseFormPage';
 import { CourseEditPage } from './pages/CourseEditPage';
 import { CertificateVerificationPage } from './pages/CertificateVerificationPage';
+import { CategoryManagementPage } from './pages/CategoryManagementPage';
 
 function App() {
   return (
@@ -55,6 +56,14 @@ function App() {
           <Route path="/verify-certificate" element={<CertificateVerificationPage />} />
           
           {/* Protected Routes */}
+          <Route
+            path="/instructor/categories"
+            element={
+              <ProtectedRoute>
+                <CategoryManagementPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/my-learning"
             element={
