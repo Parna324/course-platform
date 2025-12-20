@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "../components/ui/Button";
-import { Card, CardContent } from "../components/ui/Card";
 import { Spinner } from "../components/ui/Spinner";
 import { CertificateTemplate } from "../components/ui/CertificateTemplate";
 import { certificateService } from "../services/certificateService";
@@ -66,39 +65,45 @@ export const CertificateVerificationPage = () => {
   };
 
 return (
-    <div className="min-h-screen bg-slate-50 px-2 py-8 sm:px-4 sm:py-12">
-        <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-black text-white px-2 py-8 sm:px-4 sm:py-12 relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="fixed inset-0 z-0 pointer-events-none">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-900/10 rounded-full blur-[120px]" />
+        </div>
+
+        <div className="max-w-3xl mx-auto relative z-10">
             {/* Header */}
-            <div className="text-center mb-8 sm:mb-10">
-                <ShieldCheck className="w-12 h-12 sm:w-14 sm:h-14 mx-auto text-indigo-600 mb-2 sm:mb-3" />
-                <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+            <div className="text-center mb-10">
+                <div className="w-20 h-20 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-2xl shadow-blue-500/20 transform rotate-6">
+                    <ShieldCheck className="w-10 h-10 text-white" />
+                </div>
+                <h1 className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
                     Certificate Verification
                 </h1>
-                <p className="text-slate-600 mt-1 sm:mt-2 text-base sm:text-lg">
-                    Verify SkillCerts certificates instantly
+                <p className="text-gray-400 mt-2 text-lg">
+                    Verify the authenticity of any SkillCerts certificate instantly
                 </p>
             </div>
 
             {/* Search */}
-            <Card className="shadow-md">
-                <CardContent className="p-4 sm:p-6">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
                             verifyCertificate();
                         }}
-                        className="flex flex-col gap-3 sm:flex-row"
+                        className="flex flex-col gap-4 sm:flex-row"
                     >
                         <input
                             type="text"
                             value={certificateId}
                             onChange={(e) => setCertificateId(e.target.value)}
-                            placeholder="SC-934B47CAE8B6"
+                            placeholder="Enter Certificate ID (e.g. SC-934B47CAE8B6)"
                             disabled={loading}
-                            className="flex-1 px-3 py-2 sm:px-4 sm:py-3 border rounded-lg font-mono text-base sm:text-lg focus:ring-2 focus:ring-indigo-500"
+                            className="flex-1 px-4 py-3 bg-black/40 border border-white/10 rounded-xl font-mono text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         />
 
-                        <Button disabled={loading} className="px-4 sm:px-5 w-full sm:w-auto">
+                        <Button disabled={loading} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-500/20 font-semibold w-full sm:w-auto">
                             {loading ? (
                                 <Spinner size="sm" />
                             ) : (
@@ -109,36 +114,47 @@ return (
                             )}
                         </Button>
                     </form>
-                </CardContent>
-            </Card>
+            </div>
 
             {/* Result */}
             {searched && (
-                <div className="mt-6 sm:mt-8">
+                <div className="mt-8 transform transition-all duration-300">
                     {loading ? (
-                        <div className="flex justify-center py-8 sm:py-10">
+                        <div className="flex justify-center py-12">
                             <Spinner size="lg" />
                         </div>
                     ) : certificate ? (
-                        <div className="overflow-x-auto">
-                            <CertificateTemplate
-                                userName={certificate?.user?.name}
-                                courseTitle={certificate?.course?.title}
-                                instructorName={certificate?.course?.instructor?.name}
-                                certificateId={certificate?.certificateId}
-                                completionDate={
-                                    certificate?.completionDate ||
-                                    (certificate?.issuedAt ? new Date(certificate.issuedAt).toDateString() : "")
-                                }
-                            />
+                        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-1">
+                            {/* Certificate Template usually has its own styling, let's wrap it nicely */}
+                             <div className="bg-white rounded-xl overflow-hidden shadow-2xl">
+                                <CertificateTemplate
+                                    userName={certificate?.user?.name}
+                                    courseTitle={certificate?.course?.title}
+                                    instructorName={certificate?.course?.instructor?.name}
+                                    certificateId={certificate?.certificateId}
+                                    completionDate={
+                                        certificate?.completionDate ||
+                                        (certificate?.issuedAt ? new Date(certificate.issuedAt).toDateString() : "")
+                                    }
+                                />
+                            </div>
+                            
+                            <div className="p-4 mt-2 bg-green-500/10 border border-green-500/20 rounded-xl flex items-center justify-center gap-2">
+                                <CheckCircle2 className="w-5 h-5 text-green-400" />
+                                <span className="text-green-300 font-medium">This certificate is valid and verified.</span>
+                            </div>
                         </div>
                     ) : (
-                        <Card className="border border-red-400 bg-red-50">
-                            <CardContent className="p-4 sm:p-6 text-center">
-                                <XCircle className="w-7 h-7 sm:w-8 sm:h-8 mx-auto text-red-600 mb-1 sm:mb-2" />
-                                <p className="text-red-700 font-medium text-sm sm:text-base">{error}</p>
-                            </CardContent>
-                        </Card>
+                        <div className="bg-red-500/10 backdrop-blur-md border border-red-500/20 rounded-2xl p-8 text-center animate-in fade-in slide-in-from-bottom-4">
+                            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <XCircle className="w-8 h-8 text-red-400" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">Verification Failed</h3>
+                            <p className="text-red-300 font-medium">{error}</p>
+                            <p className="text-gray-400 text-sm mt-4">
+                                Please check the Certificate ID and try again. Ensure there are no typos.
+                            </p>
+                        </div>
                     )}
                 </div>
             )}

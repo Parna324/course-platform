@@ -9,9 +9,9 @@ import { wishlistService } from '../services/wishlistService';
 import { sectionService } from '../services/sectionService';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
-import { Card, CardContent } from '../components/ui/Card';
 import { PageLoader } from '../components/ui/Spinner';
 import { Alert } from '../components/ui/Alert';
+import { CertificateModal } from '../components/ui/CertificateModal';
 import { formatCurrency, formatDuration } from '../lib/utils';
 import { COURSE_LEVELS } from '../lib/constants';
 import { useAuthStore } from '../store/authStore';
@@ -30,6 +30,7 @@ export const CourseDetailPage = () => {
   const [enrolling, setEnrolling] = useState(false);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState(new Set());
+  const [showCertificatePreview, setShowCertificatePreview] = useState(false);
 
   useEffect(() => {
     fetchCourseDetails();
@@ -433,7 +434,11 @@ export const CourseDetailPage = () => {
                              <p className="text-gray-300 mb-4">
                                  Upon completing this course, you will receive a verifiable digital certificate. This can be added to your LinkedIn profile, resume, or portfolio to validate your skills to potential employers.
                              </p>
-                             <Button variant="outline" className="border-purple-500/50 text-purple-300 hover:bg-purple-500/10">
+                             <Button 
+                                variant="outline" 
+                                className="border-purple-500/50 text-purple-300 hover:bg-purple-500/10"
+                                onClick={() => setShowCertificatePreview(true)}
+                             >
                                  View Sample Certificate
                              </Button>
                          </div>
@@ -455,6 +460,19 @@ export const CourseDetailPage = () => {
           onReviewSubmitted={fetchReviews}
         />
       </div>
+
+      {showCertificatePreview && (
+        <CertificateModal
+            certificateData={{
+                userName: user?.name || "John Doe",
+                courseTitle: course.title,
+                completionDate: new Date().toISOString(),
+                certificateId: "SAMPLE-CERT-123456",
+                instructorName: course.instructor?.name || "Instructor Name"
+            }}
+            onClose={() => setShowCertificatePreview(false)}
+        />
+      )}
     </div>
   );
 };

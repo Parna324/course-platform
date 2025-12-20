@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { User, Mail, Camera, Save, Loader2 } from 'lucide-react';
+import { User, Mail, Camera, Save, Loader2, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { authService } from '../services/authService';
 import { useAuthStore } from '../store/authStore';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Alert } from '../components/ui/Alert';
@@ -58,12 +57,18 @@ export const ProfilePage = () => {
   if (!user) return null;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-black min-h-screen text-white pt-20 pb-12">
+        {/* Background Effects */}
+        <div className="fixed inset-0 z-0 pointer-events-none">
+            <div className="absolute top-0 right-[20%] w-[600px] h-[600px] bg-purple-900/10 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-[10%] w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[100px]" />
+        </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
-          <p className="text-gray-600">Manage your account settings and preferences</p>
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-2">My Profile</h1>
+          <p className="text-gray-400">Manage your account settings and preferences</p>
         </div>
 
         {success && (
@@ -78,171 +83,188 @@ export const ProfilePage = () => {
           </Alert>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Summary Card */}
-          <Card className="lg:col-span-1">
-            <CardContent className="p-6">
+          <div className="lg:col-span-1">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sticky top-24">
               <div className="text-center">
                 {/* Avatar */}
-                <div className="relative inline-block mb-4">
-                  <div className="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-4xl font-bold overflow-hidden">
-                    {formData.avatar ? (
-                      <img
-                        src={formData.avatar}
-                        alt={formData.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span>{formData.name.charAt(0).toUpperCase()}</span>
-                    )}
+                <div className="relative inline-block mb-6">
+                  <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-purple-500 to-blue-500">
+                    <div className="w-full h-full rounded-full bg-black overflow-hidden flex items-center justify-center">
+                        {formData.avatar ? (
+                        <img
+                            src={formData.avatar}
+                            alt={formData.name}
+                            className="w-full h-full object-cover"
+                        />
+                        ) : (
+                        <span className="text-4xl font-bold text-white">{formData.name.charAt(0).toUpperCase()}</span>
+                        )}
+                    </div>
                   </div>
-                  <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors">
+                  <button className="absolute bottom-1 right-1 bg-white text-black p-2 rounded-full hover:bg-gray-200 transition-colors shadow-lg">
                     <Camera className="w-4 h-4" />
                   </button>
                 </div>
 
-                <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                <h3 className="text-xl font-bold text-white mb-1">
                   {user.name}
                 </h3>
-                <p className="text-gray-600 mb-3">{user.email}</p>
+                <p className="text-gray-400 mb-4 text-sm">{user.email}</p>
                 
-                <Badge variant="primary" className="mb-4">
-                  {USER_ROLES[user.role]}
-                </Badge>
+                <div className="flex flex-wrap justify-center gap-2 mb-6">
+                    <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 capitalize">
+                        {USER_ROLES[user.role]}
+                    </Badge>
 
-                {user.isVerified && (
-                  <Badge variant="success" className="ml-2">
-                    Verified
-                  </Badge>
-                )}
+                    {user.isVerified && (
+                        <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
+                            Verified
+                        </Badge>
+                    )}
+                </div>
 
-                <div className="mt-6 pt-6 border-t border-gray-200 text-left">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                    Account Stats
+                <div className="pt-6 border-t border-white/10 text-left">
+                  <h4 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-gray-500" />
+                    Account Details
                   </h4>
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Member since:</span>
-                      <span className="font-medium text-gray-900">
+                      <span className="text-gray-500">Member since</span>
+                      <span className="font-medium text-gray-300">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Status</span>
+                      <span className="font-medium text-green-400">Active</span>
                     </div>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Profile Form */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <Input
-                    label="Full Name"
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="John Doe"
-                    required
-                  />
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-white/10 bg-white/5">
+                    <h2 className="text-lg font-semibold text-white">Personal Information</h2>
                 </div>
+                <div className="p-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                        <Input
+                            label="Full Name"
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            placeholder="John Doe"
+                            className="bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-purple-500"
+                            labelClassName="text-gray-300"
+                            required
+                        />
+                        </div>
 
-                <div>
-                  <Input
-                    label="Email Address"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="john@example.com"
-                    disabled
-                  />
-                  <p className="text-sm text-gray-500 mt-1">
-                    Email cannot be changed
-                  </p>
-                </div>
+                        <div>
+                        <Input
+                            label="Email Address"
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="john@example.com"
+                            className="bg-black/20 border-white/5 text-gray-400 cursor-not-allowed"
+                            labelClassName="text-gray-300"
+                            disabled
+                        />
+                        <p className="text-xs text-gray-500 mt-1.5 ml-1">
+                            Email cannot be changed contact support for assistance
+                        </p>
+                        </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Bio
-                  </label>
-                  <textarea
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleChange}
-                    rows={4}
-                    placeholder="Tell us about yourself..."
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                  />
-                </div>
+                        <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1.5 ml-1">
+                            Bio
+                        </label>
+                        <textarea
+                            name="bio"
+                            value={formData.bio}
+                            onChange={handleChange}
+                            rows={4}
+                            placeholder="Tell us about yourself..."
+                            className="w-full px-4 py-2.5 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 outline-none transition-all"
+                        />
+                        </div>
 
-                <div>
-                  <Input
-                    label="Avatar URL"
-                    type="url"
-                    name="avatar"
-                    value={formData.avatar}
-                    onChange={handleChange}
-                    placeholder="https://example.com/avatar.jpg"
-                  />
-                </div>
+                        <div>
+                        <Input
+                            label="Avatar URL"
+                            type="url"
+                            name="avatar"
+                            value={formData.avatar}
+                            onChange={handleChange}
+                            placeholder="https://example.com/avatar.jpg"
+                            className="bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-purple-500"
+                            labelClassName="text-gray-300"
+                        />
+                        </div>
 
-                <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5 mr-2" />
-                      Save Changes
-                    </>
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Additional Settings */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Account Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between py-3 border-b border-gray-200">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-900">Change Password</h4>
-                  <p className="text-sm text-gray-600">Update your password</p>
+                        <Button type="submit" disabled={loading} className="w-full bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20 py-3 rounded-xl font-semibold">
+                        {loading ? (
+                            <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Saving Changes...
+                            </>
+                        ) : (
+                            <>
+                            <Save className="w-5 h-5 mr-2" />
+                            Save Changes
+                            </>
+                        )}
+                        </Button>
+                    </form>
                 </div>
-                <Button variant="outline" size="sm">Change</Button>
-              </div>
-              
-              <div className="flex items-center justify-between py-3 border-b border-gray-200">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-900">Email Notifications</h4>
-                  <p className="text-sm text-gray-600">Manage your email preferences</p>
-                </div>
-                <Button variant="outline" size="sm">Manage</Button>
-              </div>
-              
-              <div className="flex items-center justify-between py-3">
-                <div>
-                  <h4 className="text-sm font-medium text-red-600">Delete Account</h4>
-                  <p className="text-sm text-gray-600">Permanently delete your account</p>
-                </div>
-                <Button variant="danger" size="sm">Delete</Button>
-              </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Additional Settings */}
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-white/10 bg-white/5">
+                    <h2 className="text-lg font-semibold text-white">Account Settings</h2>
+                </div>
+                <div className="p-6">
+                    <div className="space-y-4">
+                    <div className="flex items-center justify-between py-3 border-b border-white/10">
+                        <div>
+                        <h4 className="text-sm font-medium text-white">Change Password</h4>
+                        <p className="text-sm text-gray-500">Update your security credentials</p>
+                        </div>
+                        <Button variant="outline" size="sm" className="border-white/20 text-gray-300 hover:text-white hover:bg-white/10">Change</Button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between py-3 border-b border-white/10">
+                        <div>
+                        <h4 className="text-sm font-medium text-white">Email Notifications</h4>
+                        <p className="text-sm text-gray-500">Manage your email preferences</p>
+                        </div>
+                        <Button variant="outline" size="sm" className="border-white/20 text-gray-300 hover:text-white hover:bg-white/10">Manage</Button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between py-3">
+                        <div>
+                        <h4 className="text-sm font-medium text-red-400">Delete Account</h4>
+                        <p className="text-sm text-gray-500">Permanently delete your account</p>
+                        </div>
+                        <Button variant="danger" size="sm" className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/20">Delete</Button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

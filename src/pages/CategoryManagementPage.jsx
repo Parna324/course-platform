@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Spinner } from '../components/ui/Spinner';
 import { categoryService } from '../services/categoryService';
-import { Pencil, Trash2, Check, X } from 'lucide-react';
+import { Pencil, Trash2, Check, X, Tag } from 'lucide-react';
+import { Alert } from '../components/ui/Alert';
 
 export const CategoryManagementPage = () => {
   const [categories, setCategories] = useState([]);
@@ -94,70 +94,101 @@ export const CategoryManagementPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-12">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6 text-slate-900">Manage Categories</h1>
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <form onSubmit={handleAddCategory} className="flex gap-3 mb-4">
-              <Input
-                type="text"
-                value={newCategory}
-                onChange={e => setNewCategory(e.target.value)}
-                placeholder="New category name"
-                disabled={loading}
-                className="flex-1"
-              />
-              <Button type="submit" disabled={loading || !newCategory.trim()}>
+    <div className="bg-black min-h-screen text-white pt-20 pb-12 overflow-hidden relative">
+       {/* Background Effects */}
+        <div className="fixed inset-0 z-0 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-purple-900/10 rounded-full blur-[100px]" />
+            <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-900/10 rounded-full blur-[100px]" />
+        </div>
+
+      <div className="max-w-3xl mx-auto px-4 relative z-10">
+        <div className="flex items-center gap-3 mb-8">
+            <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                <Tag className="w-6 h-6 text-purple-400" />
+            </div>
+            <div>
+                <h1 className="text-3xl font-bold text-white">Manage Categories</h1>
+                <p className="text-gray-400 text-sm">Create and modify course categories</p>
+            </div>
+        </div>
+
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="p-6 border-b border-white/10 bg-white/5">
+            <form onSubmit={handleAddCategory} className="flex gap-4">
+              <div className="flex-1">
+                 <Input
+                    type="text"
+                    value={newCategory}
+                    onChange={e => setNewCategory(e.target.value)}
+                    placeholder="Enter new category name..."
+                    disabled={loading}
+                    className="bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-purple-500 h-10"
+                />
+              </div>
+              <Button 
+                type="submit" 
+                disabled={loading || !newCategory.trim()}
+                className="bg-purple-600 hover:bg-purple-700 text-white h-10 px-6 rounded-lg"
+              >
                 {loading ? <Spinner size="sm" /> : 'Add Category'}
               </Button>
             </form>
-            {error && <div className="text-red-600 mb-2">{error}</div>}
-            {success && <div className="text-green-600 mb-2">{success}</div>}
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Existing Categories</h2>
-              {categories.length === 0 ? (
-                <div className="text-slate-500">No categories found.</div>
-              ) : (
-                <ul className="space-y-2">
-                  {categories.map(cat => (
-                    <li key={cat._id} className="px-3 py-2 bg-white rounded shadow border flex items-center justify-between">
-                      {editingId === cat._id ? (
-                        <>
-                          <Input
+          </div>
+          
+          <div className="p-6">
+            {error && <Alert variant="error" className="mb-4">{error}</Alert>}
+            {success && <Alert variant="success" className="mb-4">{success}</Alert>}
+
+            <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                Existing Categories
+                <span className="text-xs bg-white/10 text-gray-300 px-2 py-0.5 rounded-full">{categories.length}</span>
+            </h2>
+            
+            {categories.length === 0 ? (
+                <div className="text-center py-12 text-gray-500 bg-white/5 rounded-xl border border-white/5 dashed">
+                    <Tag className="w-10 h-10 mx-auto mb-3 opacity-20" />
+                    <p>No categories found.</p>
+                </div>
+            ) : (
+                <div className="space-y-2">
+                {categories.map(cat => (
+                    <div key={cat._id} className="group p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all flex items-center justify-between">
+                    {editingId === cat._id ? (
+                        <div className="flex items-center gap-2 w-full animate-in fade-in">
+                        <Input
                             type="text"
                             value={editingName}
                             onChange={e => setEditingName(e.target.value)}
-                            className="flex-1 mr-2"
+                            className="bg-black/50 border-purple-500/50 text-white h-9 flex-1"
                             disabled={loading}
-                          />
-                          <Button size="sm" onClick={() => handleUpdateCategory(cat._id)} disabled={loading || !editingName.trim()} className="mr-1">
+                            autoFocus
+                        />
+                        <Button size="sm" onClick={() => handleUpdateCategory(cat._id)} disabled={loading || !editingName.trim()} className="h-9 w-9 p-0 bg-green-500/20 text-green-400 hover:bg-green-500/30">
                             <Check className="w-4 h-4" />
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => { setEditingId(null); setEditingName(''); }} disabled={loading}>
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => { setEditingId(null); setEditingName(''); }} disabled={loading} className="h-9 w-9 p-0 text-gray-400 hover:text-white">
                             <X className="w-4 h-4" />
-                          </Button>
-                        </>
-                      ) : (
+                        </Button>
+                        </div>
+                    ) : (
                         <>
-                          <span>{cat.name}</span>
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" onClick={() => handleEditCategory(cat)} disabled={loading}>
-                              <Pencil className="w-4 h-4" />
+                        <span className="font-medium text-gray-200 pl-2">{cat.name}</span>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button size="sm" variant="ghost" onClick={() => handleEditCategory(cat)} disabled={loading} className="h-8 w-8 p-0 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10">
+                            <Pencil className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleDeleteCategory(cat._id)} disabled={loading}>
-                              <Trash2 className="w-4 h-4" />
+                            <Button size="sm" variant="ghost" onClick={() => handleDeleteCategory(cat._id)} disabled={loading} className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-400/10">
+                            <Trash2 className="w-4 h-4" />
                             </Button>
-                          </div>
+                        </div>
                         </>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
+                    )}
+                    </div>
+                ))}
+                </div>
+            )}
             </div>
-          </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   );

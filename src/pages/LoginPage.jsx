@@ -23,9 +23,16 @@ export const LoginPage = () => {
     setError('');
 
     try {
-      await login(formData);
+      const response = await login(formData);
+      const user = response.data.user;
+      
       toast.success('Login successful! Welcome back.');
-      navigate('/');
+      
+      if (user.role === 'instructor') {
+          navigate('/instructor/dashboard');
+      } else {
+          navigate('/');
+      }
     } catch (err) {
       const errorMessage = err.message || 'Failed to login';
       toast.error(errorMessage);

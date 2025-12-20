@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Award, Download, ExternalLink, CheckCircle, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { certificateService } from '../services/certificateService';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { PageLoader } from '../components/ui/Spinner';
@@ -88,13 +87,22 @@ export const CertificatesPage = () => {
   if (loading) return <PageLoader />;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-black min-h-screen text-white pt-20 pb-12">
+        {/* Background Effects */}
+        <div className="fixed inset-0 z-0 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-600/10 rounded-full blur-[100px]" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px]" />
+        </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Certificates</h1>
-          <p className="text-gray-600">
-            {certificates.length} {certificates.length === 1 ? 'certificate' : 'certificates'} earned
+        <div className="mb-10 text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-blue-500 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-2xl shadow-green-400/20 transform rotate-3">
+                <Award className="w-10 h-10 text-white" />
+            </div>
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-2">My Certificates</h1>
+          <p className="text-gray-400 text-lg">
+            Showcase your achievements and continuous learning journey
           </p>
         </div>
 
@@ -106,119 +114,134 @@ export const CertificatesPage = () => {
 
         {/* Certificates Grid */}
         {certificates.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <Award className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                No certificates yet
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-16 text-center max-w-2xl mx-auto">
+              <Award className="w-16 h-16 text-gray-400 mx-auto mb-6 opacity-50" />
+              <h3 className="text-2xl font-bold text-white mb-3">
+                No certificates earned yet
               </h3>
-              <p className="text-gray-600 mb-6">
-                Complete courses to earn certificates and showcase your skills
+              <p className="text-gray-400 mb-8 mx-auto">
+                Complete courses to earn recognized certificates. Start your learning journey today and build your professional portfolio.
               </p>
-              <Button onClick={() => window.location.href = '/my-learning'}>
-                Continue Learning
+              <Button onClick={() => window.location.href = '/courses'} className="bg-white text-black hover:bg-gray-200 font-semibold px-8 py-3 rounded-full">
+                Explore Courses
               </Button>
-            </CardContent>
-          </Card>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {certificates.map((certificate) => (
-              <Card key={certificate._id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-t-lg">
-                  <div className="flex items-center justify-between">
-                    <Award className="w-12 h-12" />
-                    <Badge variant="success" className="bg-green-500 text-white">
+              <div key={certificate._id} className="group bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300 shadow-2xl">
+                <div className="h-32 bg-gradient-to-r from-blue-900 to-purple-900 relative p-6">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <Award className="w-32 h-32 transform rotate-12" />
+                    </div>
+                  <div className="flex items-center justify-between relative z-10">
+                     <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
+                        <Award className="w-6 h-6 text-yellow-400" />
+                     </div>
+                    <Badge className="bg-green-500/20 text-green-300 border-green-500/30 backdrop-blur-md">
                       <CheckCircle className="w-3 h-3 mr-1" />
                       Verified
                     </Badge>
                   </div>
-                </CardHeader>
+                </div>
                 
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 h-14">
                     {certificate.course?.title || 'Course Title'}
                   </h3>
                   
-                  <div className="space-y-2 mb-4 text-sm text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Certificate ID:</span>
-                      <span className="font-mono font-medium text-gray-900">
+                  <div className="space-y-3 mb-6 text-sm text-gray-400">
+                    <div className="flex justify-between items-center py-2 border-b border-white/5">
+                      <span>ID</span>
+                      <span className="font-mono font-medium text-gray-300 text-xs">
                         {certificate.certificateId}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Issued on:</span>
-                      <span className="font-medium text-gray-900">
+                    <div className="flex justify-between items-center py-2 border-b border-white/5">
+                      <span>Issued</span>
+                      <span className="font-medium text-gray-300">
                         {formatDate(certificate.issuedAt)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-3">
                     <Button
                       onClick={() => handleView(certificate)}
-                      className="w-full"
+                      className="w-full bg-white/10 hover:bg-white/20 text-white border-none"
                       size="sm"
                     >
                       <Eye className="w-4 h-4 mr-2" />
-                      View Certificate
+                      View
                     </Button>
                     <Button
                       onClick={() => handleDownload(certificate)}
                       variant="outline"
-                      className="w-full"
+                      className="w-full border-white/10 text-gray-300 hover:text-white hover:bg-white/5"
                       size="sm"
                       disabled={downloadingId === certificate._id}
                     >
                       {downloadingId === certificate._id ? (
                         <>
-                          <div className="w-4 h-4 mr-2 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
-                          Generating...
+                          <div className="w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Wait...
                         </>
                       ) : (
                         <>
                           <Download className="w-4 h-4 mr-2" />
-                          Download PDF
+                          PDF
                         </>
                       )}
                     </Button>
                     
                     <Button
                       onClick={() => handleVerify(certificate.certificateId)}
-                      variant="outline"
-                      className="w-full"
+                      variant="ghost"
+                      className="w-full col-span-2 text-gray-400 hover:text-white"
                       size="sm"
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
-                      Verify Certificate
+                      Verify Authenticity
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         )}
 
         {/* Info Section */}
         {certificates.length > 0 && (
-          <Card className="mt-8 bg-blue-50 border-blue-200">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <Award className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+          <div className="mt-12 bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-white/10 rounded-2xl p-8 backdrop-blur-md">
+              <div className="flex flex-col md:flex-row items-start gap-6">
+                <div className="p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                    <Award className="w-8 h-8 text-blue-400" />
+                </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-xl font-bold text-white mb-3">
                     About Your Certificates
                   </h3>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    <li>• All certificates are digitally signed and verifiable</li>
-                    <li>• Share your certificate ID with employers to verify authenticity</li>
-                    <li>• Certificates never expire and can be downloaded anytime</li>
-                    <li>• Add certificates to your LinkedIn profile to showcase your skills</li>
-                  </ul>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
+                          <p className="text-gray-300 text-sm">Digitally signed and cryptographically secure.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
+                          <p className="text-gray-300 text-sm">Valid lifetime proof of your achievement.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
+                          <p className="text-gray-300 text-sm">Download high-quality PDF for printing.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
+                          <p className="text-gray-300 text-sm">Shareable ID for employer verification.</p>
+                      </div>
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+          </div>
         )}
 
         {/* Certificate Modal */}

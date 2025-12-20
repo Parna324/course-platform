@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Plus, Edit2, Trash2, GripVertical, Save, X, Video, Eye } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Edit2, Trash2, GripVertical, Save, X, Video, Eye, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { instructorService } from '../../services/instructorService';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import { Card } from '../ui/Card';
 import { Alert } from '../ui/Alert';
 
 export const CurriculumBuilder = ({ courseId }) => {
@@ -274,7 +273,7 @@ export const CurriculumBuilder = ({ courseId }) => {
   };
 
   if (loading) {
-    return <div className="text-center py-8 text-gray-600">Loading curriculum...</div>;
+    return <div className="text-center py-8 text-gray-400">Loading curriculum...</div>;
   }
 
   return (
@@ -292,15 +291,15 @@ export const CurriculumBuilder = ({ courseId }) => {
       )}
 
       {/* Sections List */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {sections.map((section, index) => (
-          <Card key={section._id} className="overflow-hidden">
+          <div key={section._id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden transition-all hover:border-white/20">
             {/* Section Header */}
-            <div className="bg-gray-50 border-b border-gray-200">
+            <div className="bg-white/5 border-b border-white/10">
               <div className="flex items-center p-4">
                 <button
                   onClick={() => toggleSection(section._id)}
-                  className="mr-3 text-gray-500 hover:text-gray-700"
+                  className="mr-3 text-gray-400 hover:text-white transition-colors"
                 >
                   {expandedSections.has(section._id) ? (
                     <ChevronUp className="w-5 h-5" />
@@ -312,34 +311,36 @@ export const CurriculumBuilder = ({ courseId }) => {
                 <div className="flex-1">
                   {editingSectionId === section._id ? (
                     <div className="flex items-center gap-2">
-                      <Input
-                        value={sectionTitle}
-                        onChange={(e) => setSectionTitle(e.target.value)}
-                        placeholder="Section title"
-                        className="flex-1"
-                      />
-                      <Button size="sm" onClick={() => handleUpdateSection(section._id)}>
+                       <Input
+                          value={sectionTitle}
+                          onChange={(e) => setSectionTitle(e.target.value)}
+                          placeholder="Section title"
+                          className="flex-1 bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-purple-500 h-9"
+                          autoFocus
+                       />
+                      <Button size="sm" onClick={() => handleUpdateSection(section._id)} className="bg-purple-600 hover:bg-purple-700 h-9 px-3">
                         <Save className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="outline" onClick={cancelEditSection}>
+                      <Button size="sm" variant="outline" onClick={cancelEditSection} className="h-9 px-3 border-white/10 text-gray-300 hover:text-white hover:bg-white/10">
                         <X className="w-4 h-4" />
                       </Button>
                     </div>
                   ) : (
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold text-gray-900">
+                        <h3 className="font-semibold text-white">
                           Section {index + 1}: {section.title}
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs text-gray-400 mt-0.5">
                           {section.lectures?.length || 0} lectures
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => startEditSection(section)}
+                          className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-white/10"
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
@@ -347,8 +348,9 @@ export const CurriculumBuilder = ({ courseId }) => {
                           size="sm"
                           variant="ghost"
                           onClick={() => handleDeleteSection(section._id)}
+                          className="h-8 w-8 p-0 text-gray-400 hover:text-red-400 hover:bg-red-500/10"
                         >
-                          <Trash2 className="w-4 h-4 text-red-600" />
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -359,81 +361,89 @@ export const CurriculumBuilder = ({ courseId }) => {
 
             {/* Section Content (Lectures) */}
             {expandedSections.has(section._id) && (
-              <div className="p-4">
+              <div className="p-4 bg-black/20">
                 {/* Lectures List */}
                 {section.lectures && section.lectures.length > 0 && (
-                  <div className="space-y-2 mb-4">
+                  <div className="space-y-3 mb-4">
                     {section.lectures.map((lecture, lectureIndex) => (
                       <div
                         key={lecture._id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/5 hover:border-white/10 transition-colors"
                       >
                         {editingLecture && editingLecture._id === lecture._id ? (
                           <div className="flex-1 space-y-3">
                             <Input
-                              value={lectureForm.title}
-                              onChange={(e) => setLectureForm({ ...lectureForm, title: e.target.value })}
-                              placeholder="Lecture title"
+                                value={lectureForm.title}
+                                onChange={(e) => setLectureForm({ ...lectureForm, title: e.target.value })}
+                                placeholder="Lecture title"
+                                className="bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-blue-500"
                             />
                             <Input
-                              value={lectureForm.videoUrl}
-                              onChange={(e) => setLectureForm({ ...lectureForm, videoUrl: e.target.value })}
-                              placeholder="Video URL"
-                              type="url"
+                                value={lectureForm.videoUrl}
+                                onChange={(e) => setLectureForm({ ...lectureForm, videoUrl: e.target.value })}
+                                placeholder="Video URL"
+                                type="url"
+                                className="bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-blue-500"
                             />
                             <div className="flex items-center gap-4">
                               <Input
                                 value={lectureForm.duration}
                                 onChange={(e) => setLectureForm({ ...lectureForm, duration: e.target.value })}
                                 placeholder="Duration (e.g., 10:30)"
-                                className="w-32"
+                                className="w-32 bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-blue-500"
                               />
-                              <label className="flex items-center gap-2 text-sm">
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer select-none">
                                 <input
                                   type="checkbox"
                                   checked={lectureForm.isPreview}
                                   onChange={(e) => setLectureForm({ ...lectureForm, isPreview: e.target.checked })}
-                                  className="w-4 h-4 text-blue-600 rounded"
+                                  className="w-4 h-4 text-blue-500 bg-black/50 border-gray-500 rounded focus:ring-blue-500"
                                 />
                                 <span>Free Preview</span>
                               </label>
                             </div>
-                            <div className="flex gap-2">
-                              <Button size="sm" onClick={handleUpdateLecture}>
+                            <div className="flex gap-2 pt-1">
+                              <Button size="sm" onClick={handleUpdateLecture} className="bg-blue-600 hover:bg-blue-700 text-white">
                                 <Save className="w-4 h-4 mr-1" />
                                 Save
                               </Button>
-                              <Button size="sm" variant="outline" onClick={cancelLectureForm}>
+                              <Button size="sm" variant="outline" onClick={cancelLectureForm} className="border-white/10 text-gray-300 hover:text-white hover:bg-white/10">
                                 Cancel
                               </Button>
                             </div>
                           </div>
                         ) : (
                           <>
-                            <div className="flex items-center gap-3 flex-1">
-                              <Video className="w-5 h-5 text-gray-400" />
-                              <div>
+                            <div className="flex items-center gap-3 flex-1 overflow-hidden">
+                              <div className="p-2 bg-white/5 rounded-lg flex-shrink-0">
+                                 <Video className="w-5 h-5 text-gray-400" />
+                              </div>
+                              <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-medium text-gray-900">
+                                  <span className="font-medium text-gray-200 truncate">
                                     {lectureIndex + 1}. {lecture.title}
                                   </span>
                                   {lecture.isPreview && (
-                                    <span className="flex items-center text-xs text-blue-600 gap-1">
+                                    <span className="flex items-center text-[10px] font-bold uppercase tracking-wider text-blue-400 gap-1 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20">
                                       <Eye className="w-3 h-3" />
                                       Preview
                                     </span>
                                   )}
                                 </div>
                                 {lecture.duration && (
-                                  <span className="text-sm text-gray-600">{lecture.duration}</span>
+                                    <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
+                                        <Clock className="w-3 h-3" />
+                                        <span>{lecture.duration}</span>
+                                    </div>
                                 )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => startEditLecture(lecture)}
+                                className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-white/10"
                               >
                                 <Edit2 className="w-4 h-4" />
                               </Button>
@@ -441,8 +451,9 @@ export const CurriculumBuilder = ({ courseId }) => {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleDeleteLecture(lecture._id)}
+                                className="h-8 w-8 p-0 text-gray-400 hover:text-red-400 hover:bg-red-500/10"
                               >
-                                <Trash2 className="w-4 h-4 text-red-600" />
+                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
                           </>
@@ -454,50 +465,54 @@ export const CurriculumBuilder = ({ courseId }) => {
 
                 {/* Add Lecture Form */}
                 {addingLectureToSection === section._id ? (
-                  <div className="p-4 bg-blue-50 rounded-lg space-y-3">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3 animate-in fade-in slide-in-from-top-2">
+                    <h4 className="text-sm font-semibold text-gray-300 mb-2">New Lecture</h4>
                     <Input
-                      value={lectureForm.title}
-                      onChange={(e) => setLectureForm({ ...lectureForm, title: e.target.value })}
-                      placeholder="Lecture title"
+                       value={lectureForm.title}
+                       onChange={(e) => setLectureForm({ ...lectureForm, title: e.target.value })}
+                       placeholder="Lecture title"
+                       className="bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-blue-500"
                     />
                     <Input
-                      value={lectureForm.videoUrl}
-                      onChange={(e) => setLectureForm({ ...lectureForm, videoUrl: e.target.value })}
-                      placeholder="Video URL"
-                      type="url"
+                       value={lectureForm.videoUrl}
+                       onChange={(e) => setLectureForm({ ...lectureForm, videoUrl: e.target.value })}
+                       placeholder="Video URL"
+                       type="url"
+                       className="bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-blue-500"
                     />
                     <div className="flex items-center gap-4">
                       <Input
                         value={lectureForm.duration}
                         onChange={(e) => setLectureForm({ ...lectureForm, duration: e.target.value })}
                         placeholder="Duration (e.g., 10:30)"
-                        className="w-32"
+                        className="w-32 bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-blue-500"
                       />
-                      <label className="flex items-center gap-2 text-sm">
+                      <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer select-none">
                         <input
                           type="checkbox"
                           checked={lectureForm.isPreview}
                           onChange={(e) => setLectureForm({ ...lectureForm, isPreview: e.target.checked })}
-                          className="w-4 h-4 text-blue-600 rounded"
+                          className="w-4 h-4 text-blue-500 bg-black/50 border-gray-500 rounded focus:ring-blue-500"
                         />
-                        <span>Free Preview</span>
+                         <span>Free Preview</span>
                       </label>
                     </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={() => handleAddLecture(section._id)}>
-                        <Save className="w-4 h-4 mr-1" />
+                    <div className="flex gap-2 pt-2">
+                      <Button size="sm" onClick={() => handleAddLecture(section._id)} className="bg-blue-600 hover:bg-blue-700 text-white">
+                        <Plus className="w-4 h-4 mr-1" />
                         Add Lecture
                       </Button>
-                      <Button size="sm" variant="outline" onClick={cancelLectureForm}>
+                      <Button size="sm" variant="outline" onClick={cancelLectureForm} className="border-white/10 text-gray-300 hover:text-white hover:bg-white/10">
                         Cancel
                       </Button>
                     </div>
                   </div>
                 ) : (
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     onClick={() => setAddingLectureToSection(section._id)}
+                    className="w-full border border-dashed border-white/10 text-gray-400 hover:text-white hover:bg-white/5"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Lecture
@@ -505,35 +520,36 @@ export const CurriculumBuilder = ({ courseId }) => {
                 )}
               </div>
             )}
-          </Card>
+          </div>
         ))}
       </div>
 
       {/* Add Section */}
       {isAddingSection ? (
-        <Card className="p-4">
+        <div className="p-4 bg-white/5 border border-white/10 rounded-xl animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center gap-2">
             <Input
               value={sectionTitle}
               onChange={(e) => setSectionTitle(e.target.value)}
               placeholder="Section title"
-              className="flex-1"
+              className="flex-1 bg-black/50 border-white/10 text-white placeholder-gray-500 focus:border-purple-500"
+              autoFocus
             />
-            <Button onClick={handleAddSection}>
-              <Save className="w-4 h-4 mr-1" />
+            <Button onClick={handleAddSection} className="bg-purple-600 hover:bg-purple-700 text-white">
+              <Plus className="w-4 h-4 mr-1" />
               Add
             </Button>
-            <Button variant="outline" onClick={() => { setIsAddingSection(false); setSectionTitle(''); }}>
+            <Button variant="outline" onClick={() => { setIsAddingSection(false); setSectionTitle(''); }} className="border-white/10 text-gray-300 hover:text-white hover:bg-white/10">
               Cancel
             </Button>
           </div>
-        </Card>
+        </div>
       ) : (
         <Button
           variant="outline"
           size="lg"
           onClick={() => setIsAddingSection(true)}
-          className="w-full"
+          className="w-full border-dashed border-white/20 text-gray-400 hover:text-white hover:bg-white/5 hover:border-white/30 h-12"
         >
           <Plus className="w-5 h-5 mr-2" />
           Add Section
@@ -541,11 +557,13 @@ export const CurriculumBuilder = ({ courseId }) => {
       )}
 
       {sections.length === 0 && !isAddingSection && (
-        <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-          <Video className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">No curriculum yet</h3>
-          <p className="text-gray-600 mb-4">Start building your course by adding sections and lectures</p>
-          <Button onClick={() => setIsAddingSection(true)}>
+        <div className="text-center py-16 bg-white/5 rounded-xl border-2 border-dashed border-white/10">
+          <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+             <Video className="w-8 h-8 text-purple-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-white mb-1">No curriculum yet</h3>
+          <p className="text-gray-400 mb-6 max-w-sm mx-auto">Start building your course structure by adding sections and lectures</p>
+          <Button onClick={() => setIsAddingSection(true)} className="bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20">
             <Plus className="w-5 h-5 mr-2" />
             Add First Section
           </Button>

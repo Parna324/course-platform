@@ -13,16 +13,15 @@ import {
   Library,
   LayoutDashboard,
   X,
-  Menu
+  Menu,
+  PlayCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { courseService } from '../services/courseService';
 import { progressService } from '../services/progressService';
 import { sectionService } from '../services/sectionService';
 import { certificateService } from '../services/certificateService';
-import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Badge } from '../components/ui/Badge';
 import { PageLoader } from '../components/ui/Spinner';
 import { Alert } from '../components/ui/Alert';
 import { formatDuration } from '../lib/utils';
@@ -191,53 +190,59 @@ export const CourseLearningPage = () => {
   if (!course) return <Alert variant="error">Course not found</Alert>;
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-black text-white overflow-hidden">
       {/* Small Navigation Sidebar */}
-      <div className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-4 gap-4">
+      <div className="w-16 bg-black border-r border-white/10 flex flex-col items-center py-4 gap-4 z-20">
         <Link
           to="/"
-          className="p-3 rounded-lg hover:bg-gray-100 transition-colors group relative"
+          className="p-3 rounded-lg hover:bg-white/10 transition-colors group relative"
           title="Home"
         >
-          <Home className="w-6 h-6 text-gray-600 group-hover:text-blue-600" />
+          <Home className="w-6 h-6 text-gray-400 group-hover:text-white" />
         </Link>
         <Link
           to="/courses"
-          className="p-3 rounded-lg hover:bg-gray-100 transition-colors group relative"
+          className="p-3 rounded-lg hover:bg-white/10 transition-colors group relative"
           title="All Courses"
         >
-          <Library className="w-6 h-6 text-gray-600 group-hover:text-blue-600" />
+          <Library className="w-6 h-6 text-gray-400 group-hover:text-white" />
         </Link>
         <Link
           to="/my-learning"
-          className="p-3 rounded-lg hover:bg-gray-100 transition-colors group relative"
+          className="p-3 rounded-lg hover:bg-white/10 transition-colors group relative"
           title="My Learning"
         >
-          <LayoutDashboard className="w-6 h-6 text-gray-600 group-hover:text-blue-600" />
+          <LayoutDashboard className="w-6 h-6 text-gray-400 group-hover:text-white" />
         </Link>
         
         <div className="flex-1" />
         
         <button
           onClick={() => setShowSidebar(!showSidebar)}
-          className="p-3 rounded-lg hover:bg-gray-100 transition-colors group"
+          className="p-3 rounded-lg hover:bg-white/10 transition-colors group"
           title={showSidebar ? "Hide sidebar" : "Show sidebar"}
         >
           {showSidebar ? (
-            <X className="w-6 h-6 text-gray-600 group-hover:text-blue-600" />
+            <X className="w-6 h-6 text-gray-400 group-hover:text-white" />
           ) : (
-            <Menu className="w-6 h-6 text-gray-600 group-hover:text-blue-600" />
+            <Menu className="w-6 h-6 text-gray-400 group-hover:text-white" />
           )}
         </button>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+         {/* Background Effects */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[100px]" />
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[100px]" />
+        </div>
+
         {/* Video Player Section */}
-        <div className="flex-1 flex flex-col bg-gray-900 p-4">
-          <div className="flex-1 max-w-7xl w-full mx-auto flex flex-col">
+        <div className="flex-1 flex flex-col p-6 z-10 overflow-y-auto custom-scrollbar">
+          <div className="max-w-6xl w-full mx-auto flex flex-col">
             {/* Video Player */}
-            <div className="bg-black rounded-lg overflow-hidden shadow-2xl aspect-video">
+            <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10 aspect-video relative group">
               {currentLecture ? (
                 <iframe
                   src={currentLecture.videoUrl}
@@ -247,23 +252,23 @@ export const CourseLearningPage = () => {
                   allowFullScreen
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-white">
+                <div className="flex items-center justify-center h-full text-white bg-white/5 backdrop-blur-sm">
                   <div className="text-center">
-                    <Play className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg">Select a lecture to start learning</p>
+                    <PlayCircle className="w-20 h-20 mx-auto mb-4 text-white/20" />
+                    <p className="text-xl font-medium text-gray-400">Select a lecture to start learning</p>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Video Info and Controls */}
-            <div className="bg-gray-800 text-white p-6 mt-4 rounded-lg shadow-lg">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 mt-6 rounded-2xl">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div className="flex-1">
-                  <h2 className="text-xl font-semibold mb-1">
+                  <h2 className="text-2xl font-bold text-white mb-2">
                     {currentLecture?.title || 'No lecture selected'}
                   </h2>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-gray-400 text-lg">
                     {course.title}
                   </p>
                 </div>
@@ -272,8 +277,11 @@ export const CourseLearningPage = () => {
                   <Button
                     onClick={handleMarkComplete}
                     disabled={isLectureCompleted(currentLecture._id)}
-                    variant={isLectureCompleted(currentLecture._id) ? 'secondary' : 'primary'}
-                    size="lg"
+                    className={`${
+                        isLectureCompleted(currentLecture._id) 
+                        ? 'bg-green-500/20 text-green-400 border-green-500/50 cursor-default' 
+                        : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20'
+                    } px-6 py-3 rounded-xl transition-all border`}
                   >
                     {isLectureCompleted(currentLecture._id) ? (
                       <>
@@ -291,18 +299,18 @@ export const CourseLearningPage = () => {
 
               {/* Progress Bar */}
               {progress && (
-                <div className="mt-4">
-                  <div className="flex justify-between text-sm text-gray-400 mb-2">
+                <div className="mt-4 p-4 bg-black/40 rounded-xl border border-white/5">
+                  <div className="flex justify-between text-sm text-gray-300 mb-2">
                     <span>Course Progress</span>
-                    <span className="font-semibold">{Math.round(progress.progressPercentage || 0)}%</span>
+                    <span className="font-bold text-white">{Math.round(progress.progressPercentage || 0)}%</span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-3">
+                  <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500"
                       style={{ width: `${progress.progressPercentage || 0}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs text-gray-500 mt-2 font-medium">
                     {progress.completedCount || 0} of {progress.totalLectures || 0} lectures completed
                   </p>
                 </div>
@@ -313,43 +321,46 @@ export const CourseLearningPage = () => {
       </div>
 
       {/* Right Sidebar - Course Content */}
-      {showSidebar && (
-        <div className="w-96 bg-white border-l border-gray-200 flex flex-col shadow-xl">
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-            <h3 className="font-bold text-gray-900 mb-2 text-lg">Course Content</h3>
-            <p className="text-sm text-gray-600">
+      <div 
+        className={`${showSidebar ? 'w-96 translate-x-0 opacity-100' : 'w-0 translate-x-full opacity-0'} transition-all duration-300 bg-black/80 backdrop-blur-xl border-l border-white/10 flex flex-col z-20 absolute right-0 inset-y-0 md:relative`}
+      >
+          <div className="p-6 border-b border-white/10 bg-white/5">
+            <h3 className="font-bold text-white mb-2 text-lg">Course Content</h3>
+            <p className="text-sm text-gray-400">
               {sections.length} sections • {sections.reduce((acc, s) => acc + s.lectures.length, 0)} lectures
             </p>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
-            <div className="divide-y divide-gray-200">
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <div className="divide-y divide-white/5">
               {sections.map((section) => (
                 <div key={section._id}>
                   {/* Section Header */}
                   <button
                     onClick={() => toggleSection(section._id)}
-                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors group"
                   >
                     <div className="flex items-center gap-3">
-                      <BookOpen className="w-5 h-5 text-blue-600" />
+                      <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 group-hover:text-blue-300 transition-colors">
+                           <BookOpen className="w-4 h-4" />
+                      </div>
                       <div className="text-left">
-                        <h4 className="font-semibold text-gray-900">{section.title}</h4>
-                        <p className="text-xs text-gray-500">
+                        <h4 className="font-medium text-gray-200 group-hover:text-white transition-colors text-sm">{section.title}</h4>
+                        <p className="text-xs text-gray-500 mt-0.5">
                           {section.lectures.length} lectures
                         </p>
                       </div>
                     </div>
                     {expandedSections[section._id] ? (
-                      <ChevronUp className="w-5 h-5 text-gray-400" />
+                      <ChevronUp className="w-4 h-4 text-gray-500" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-400" />
+                      <ChevronDown className="w-4 h-4 text-gray-500" />
                     )}
                   </button>
 
                   {/* Lectures List */}
                   {expandedSections[section._id] && (
-                    <div className="bg-gray-50">
+                    <div className="bg-black/40">
                       {section.lectures.map((lecture) => {
                         const isCompleted = isLectureCompleted(lecture._id);
                         const isCurrent = currentLecture?._id === lecture._id;
@@ -357,44 +368,42 @@ export const CourseLearningPage = () => {
                         return (
                           <div
                             key={lecture._id}
-                            className={`px-6 py-3 flex items-center gap-3 hover:bg-gray-100 transition-colors border-l-4 ${
-                              isCurrent ? 'bg-blue-50 border-blue-600' : 'border-transparent'
+                            className={`px-6 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors border-l-2 ${
+                              isCurrent ? 'bg-blue-500/10 border-blue-500' : 'border-transparent'
                             }`}
                           >
-                            {/* Checkbox for completion */}
-                            <input
-                              type="checkbox"
-                              checked={isCompleted}
-                              onChange={async (e) => {
-                                e.stopPropagation();
-                                try {
-                                  const response = await progressService.toggleLectureCompletion(id, lecture._id);
-                                  setProgress({
-                                    ...progress,
-                                    completedLectures: response.data.progress.completedLectures,
-                                    progressPercentage: response.data.progress.progressPercentage,
-                                  });
-                                } catch (error) {
-                                  console.error('Failed to toggle lecture completion:', error);
-                                }
-                              }}
-                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer flex-shrink-0"
-                            />
+                             {/* Checkbox for completion */}
+                             <div 
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  try {
+                                    const response = await progressService.toggleLectureCompletion(id, lecture._id);
+                                    setProgress({
+                                      ...progress,
+                                      completedLectures: response.data.progress.completedLectures,
+                                      progressPercentage: response.data.progress.progressPercentage,
+                                    });
+                                  } catch (error) {
+                                    console.error('Failed to toggle lecture completion:', error);
+                                  }
+                                }}
+                                className={`w-5 h-5 rounded-full border flex items-center justify-center cursor-pointer transition-colors ${isCompleted ? 'bg-green-500 border-green-500' : 'border-gray-500 hover:border-gray-400'}`}
+                             >
+                                 {isCompleted && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                             </div>
                             
                             <button
                               onClick={() => handleLectureClick(lecture)}
                               className="flex items-center gap-3 flex-1 text-left min-w-0"
                             >
-                              <Play className={`w-4 h-4 flex-shrink-0 ${isCurrent ? 'text-blue-600' : 'text-gray-400'}`} />
                               <span className={`text-sm flex-1 truncate ${
-                                isCurrent ? 'font-semibold text-blue-600' : 'text-gray-700'
+                                isCurrent ? 'font-medium text-blue-400' : 'text-gray-400 group-hover:text-gray-300'
                               }`}>
                                 {lecture.title}
                               </span>
                             </button>
                             
-                            <div className="flex items-center gap-1 text-xs text-gray-500 flex-shrink-0">
-                              <Clock className="w-3 h-3" />
+                            <div className="flex items-center gap-1 text-xs text-gray-600 flex-shrink-0">
                               {formatDuration(lecture.duration)}
                             </div>
                           </div>
@@ -409,21 +418,23 @@ export const CourseLearningPage = () => {
 
           {/* Completion CTA */}
           {progress?.progressPercentage === 100 && (
-            <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-t border-green-200">
+            <div className="p-6 bg-gradient-to-t from-green-900/20 to-transparent border-t border-green-500/20">
               <div className="flex items-start gap-3">
-                <Award className="w-7 h-7 text-green-600 flex-shrink-0 mt-1" />
+                <div className="p-2 bg-green-500/20 rounded-lg">
+                    <Award className="w-6 h-6 text-green-400 flex-shrink-0" />
+                </div>
                 <div className="flex-1">
-                  <h4 className="font-bold text-green-900 mb-1">
+                  <h4 className="font-bold text-green-400 mb-1">
                     Congratulations! 🎉
                   </h4>
-                  <p className="text-sm text-green-800 mb-3">
+                  <p className="text-sm text-green-300/70 mb-4">
                     You've completed this course
                   </p>
                   <div className="flex flex-col gap-2">
                     <Button
                       size="sm"
                       onClick={handleViewCertificate}
-                      className="bg-green-600 hover:bg-green-700 text-white w-full"
+                      className="bg-green-600 hover:bg-green-500 text-white w-full border-none shadow-lg shadow-green-900/20"
                       disabled={generatingCertificate}
                     >
                       <Award className="w-4 h-4 mr-2" />
@@ -433,7 +444,7 @@ export const CourseLearningPage = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => navigate('/certificates')}
-                      className="w-full"
+                      className="w-full border-green-500/30 text-green-400 hover:bg-green-500/10"
                     >
                       Go to Certificates
                     </Button>
@@ -442,8 +453,7 @@ export const CourseLearningPage = () => {
               </div>
             </div>
           )}
-        </div>
-      )}
+      </div>
 
       {/* Certificate Modal */}
       {certificateData && (

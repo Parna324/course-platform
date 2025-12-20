@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CheckCircle, Download, ArrowRight } from 'lucide-react';
-import { Card, CardContent } from '../components/ui/Card';
+import { CheckCircle, Download, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 
 export const PaymentSuccessPage = () => {
@@ -27,76 +26,85 @@ export const PaymentSuccessPage = () => {
   }, [navigate]);
 
   return (
-    <div className="bg-gray-50 min-h-screen flex items-center justify-center">
-      <div className="max-w-2xl w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <Card>
-          <CardContent className="p-12 text-center">
+    <div className="bg-black min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="fixed inset-0 z-0 pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-green-500/10 rounded-full blur-[120px]" />
+        </div>
+
+      <div className="max-w-xl w-full mx-auto relative z-10">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 sm:p-12 text-center shadow-2xl relative overflow-hidden">
+             {/* Decorative Elements */}
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-emerald-600" />
+            
             {/* Success Icon */}
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-12 h-12 text-green-600" />
+            <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-green-500/30 animate-in zoom-in duration-500">
+              <CheckCircle className="w-12 h-12 text-white" />
             </div>
 
             {/* Success Message */}
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Payment Successful! 🎉
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Payment Successful!
             </h1>
-            <p className="text-lg text-gray-600 mb-6">
-              You have been enrolled in the course
+            <p className="text-lg text-gray-400 mb-8">
+              Welcome aboard! You have been successfully enrolled.
             </p>
 
             {/* Order Details */}
             {orderId && (
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-gray-600 mb-1">Order ID</p>
-                <p className="font-mono text-sm font-medium text-gray-900">{orderId}</p>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-8 inline-block mx-auto max-w-full">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Order ID</p>
+                <p className="font-mono text-sm font-medium text-green-400 break-all">{orderId}</p>
               </div>
             )}
 
             {/* What's Next */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6 text-left">
-              <h3 className="font-semibold text-gray-900 mb-3">What's next?</h3>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span>A confirmation email has been sent to your inbox</span>
+            <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 border border-white/10 rounded-xl p-6 mb-8 text-left">
+              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-yellow-400" />
+                What happens now?
+              </h3>
+              <ul className="space-y-3 text-sm text-gray-300">
+                <li className="flex items-start gap-3">
+                  <div className="h-1.5 w-1.5 rounded-full bg-green-400 mt-1.5"></div>
+                  <span>A confirmation email has been sent to your inbox.</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span>You can now access all course materials</span>
+                <li className="flex items-start gap-3">
+                  <div className="h-1.5 w-1.5 rounded-full bg-green-400 mt-1.5"></div>
+                  <span>You have instant access to all course materials.</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span>Start learning and earn your certificate</span>
+                <li className="flex items-start gap-3">
+                  <div className="h-1.5 w-1.5 rounded-full bg-green-400 mt-1.5"></div>
+                  <span>Start learning at your own pace!</span>
                 </li>
               </ul>
             </div>
 
             {/* Actions */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               <Button
                 onClick={() => navigate('/my-learning')}
-                className="w-full"
+                className="w-full bg-white text-black hover:bg-gray-200 font-bold py-4 rounded-xl text-lg shadow-lg"
                 size="lg"
               >
-                Start Learning
+                Start Learning Now
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               
               <Button
                 onClick={() => navigate('/courses')}
-                variant="outline"
-                className="w-full"
+                variant="ghost"
+                className="w-full text-gray-400 hover:text-white"
               >
                 Browse More Courses
               </Button>
             </div>
 
             {/* Auto-redirect notice */}
-            <p className="text-sm text-gray-500 mt-6">
-              Redirecting to My Learning in {countdown} seconds...
+            <p className="text-sm text-gray-500 mt-8">
+              Redirecting to My Learning in <span className="text-white font-bold">{countdown}</span> seconds...
             </p>
-          </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   );
