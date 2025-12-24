@@ -1,10 +1,8 @@
 import { X, Download, Award } from 'lucide-react';
-import { useRef, useState } from 'react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { useState } from 'react';
+import { certificateService } from '../../services/certificateService';
 
 export const CertificateModal = ({ certificateData, onClose }) => {
-  const certificateRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
   if (!certificateData) return null;
@@ -18,46 +16,21 @@ export const CertificateModal = ({ certificateData, onClose }) => {
   });
 
   const handleDownload = async () => {
-    if (!certificateRef.current) return;
-    
     try {
       setIsDownloading(true);
       
-      // Generate filename
-      const sanitizedCourseName = courseTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-      const sanitizedUserName = userName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-      const filename = `skillcert_certificate_${sanitizedUserName}_${sanitizedCourseName}.pdf`;
+      const downloadUrl = certificateService.getDownloadUrl(certificateId);
       
-      // Capture the certificate as canvas
-      const canvas = await html2canvas(certificateRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-      
-      // Convert to PDF (landscape A4)
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4'
-      });
-      
-      // Calculate dimensions to fit the page
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = (pdfHeight - imgHeight * ratio) / 2;
-      
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save(filename);
+      // trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `certificate-${certificateId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('Error downloading PDF:', error);
       alert('Failed to download certificate. Please try again.');
     } finally {
       setIsDownloading(false);
@@ -98,7 +71,6 @@ export const CertificateModal = ({ certificateData, onClose }) => {
 
         {/* Certificate - Landscape Orientation */}
         <div 
-          ref={certificateRef}
           className="certificate-container bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-3 sm:p-6 rounded-lg"
         >
           <div className="bg-white rounded-lg shadow-2xl p-6 sm:p-10 lg:p-16 relative aspect-[1.414/1]">

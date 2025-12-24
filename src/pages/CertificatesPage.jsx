@@ -8,7 +8,7 @@ import { PageLoader } from '../components/ui/Spinner';
 import { Alert } from '../components/ui/Alert';
 import { formatDate } from '../lib/utils';
 import { CertificateModal } from '../components/ui/CertificateModal';
-import { downloadCertificate } from '../lib/downloadCertificate';
+import { CertificateModal } from '../components/ui/CertificateModal';
 import { CardContainer, CardBody, CardItem } from '../components/ui/3DCard';
 
 export const CertificatesPage = () => {
@@ -52,27 +52,17 @@ export const CertificatesPage = () => {
     try {
       setDownloadingId(certificate._id);
       
-      // Fetch certificate data
-      const response = await certificateService.viewCertificate(certificate.course._id);
-      const certData = response.data;
+      const downloadUrl = certificateService.getDownloadUrl(certificate.certificateId);
       
-      // Format date
-      const formattedDate = new Date(certData.completionDate).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-      
-      // Use the utility function to download
-      await downloadCertificate({
-        userName: certData.userName,
-        courseTitle: certData.courseTitle,
-        completionDate: formattedDate,
-        certificateId: certData.certificateId,
-        instructorName: certData.instructorName,
-      });
-      
-      toast.success('Certificate downloaded successfully');
+      // trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `certificate-${certificate.certificateId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success('Certificate download started');
     } catch (error) {
       console.error('Download error:', error);
       toast.error('Failed to download certificate');

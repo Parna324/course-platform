@@ -6,6 +6,7 @@ import {
   viewCertificate,
   verifyCertificate,
   verifyCertificateJson,
+  downloadCertificatePDF,
 } from '../controller/certificate.controller.js';
 import { authenticate } from '../middleware/auth.middleware.js';
 
@@ -14,6 +15,7 @@ const certificateRouter = Router();
 // Public verification endpoints
 certificateRouter.get('/verify/:certificateId', verifyCertificate);
 certificateRouter.get('/verify/:certificateId/json', verifyCertificateJson);
+certificateRouter.get('/download/:certificateId', downloadCertificatePDF);
 
 // Protected routes
 certificateRouter.use(authenticate);

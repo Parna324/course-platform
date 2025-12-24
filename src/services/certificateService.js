@@ -13,4 +13,8 @@ export const certificateService = {
   // Use the new JSON endpoint for verification
   verifyCertificate: (certificateId) => 
     api.get(`/certificates/verify/${certificateId}/json`),
+
+  // Get download URL
+  getDownloadUrl: (certificateId) => 
+    `${api.defaults.baseURL}/certificates/download/${certificateId}`,
 };

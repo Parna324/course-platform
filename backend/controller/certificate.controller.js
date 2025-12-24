@@ -258,7 +258,6 @@ export const verifyCertificate = async (req, res) => {
       }
     );
 
-    // Generate HTML certificate for public view
     const html = generateCertificateHTML({
       userName: certificate.user.name,
       courseTitle: certificate.course.title,
@@ -272,5 +271,60 @@ export const verifyCertificate = async (req, res) => {
   } catch (error) {
     console.error('Verify certificate error:', error);
     return res.status(500).send('Failed to verify certificate');
+  }
+};
+
+/**
+ * Download certificate PDF
+ */
+export const downloadCertificatePDF = async (req, res) => {
+  try {
+    const { certificateId } = req.params;
+
+    const certificate = await Certificate.findOne({ certificateId })
+      .populate('user', 'name')
+      .populate('course', 'title instructor')
+      .populate({
+        path: 'course',
+        populate: { path: 'instructor', select: 'name' },
+      });
+
+    if (!certificate) {
+      return ApiResponse.notFound('Certificate not found').send(res);
+    }
+
+    const completionDate = new Date(certificate.issuedAt).toLocaleDateString(
+      'en-US',
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }
+    );
+
+    // Set headers for file download
+    const filename = `certificate-${certificateId}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    const data = {
+      userName: certificate.user.name,
+      courseTitle: certificate.course.title,
+      completionDate,
+      certificateId: certificate.certificateId,
+      instructorName: certificate.course.instructor.name,
+    };
+
+    // Use the utility to stream PDF directly to response
+    const { generateCertificatePDF } = await import(
+      '../utils/certificateGenerator.js'
+    );
+    generateCertificatePDF(data, res);
+  } catch (error) {
+    console.error('Download certificate error:', error);
+    // Only send error json if headers haven't been sent (streaming hasn't started)
+    if (!res.headersSent) {
+      return ApiResponse.serverError('Failed to download certificate').send(res);
+    }
   }
 };
