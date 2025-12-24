@@ -218,7 +218,7 @@ export const CourseLearningPage = () => {
     if (id.startsWith('mock-')) {
         setHasCertificate(true);
         toast.success('🎉 Congratulations! Your certificate has been generated!');
-        return;
+        return true;
     }
 
     try {
@@ -227,18 +227,22 @@ export const CourseLearningPage = () => {
       if (response.data) {
         setHasCertificate(true);
         toast.success('🎉 Congratulations! Your certificate has been generated!');
+        return true;
       }
     } catch (error) {
       console.error('Failed to generate certificate:', error);
       // Check if certificate already exists
       if (error.response?.data?.message?.includes('already exists')) {
         setHasCertificate(true);
+        return true;
       } else {
         toast.error('Failed to generate certificate. Please try again.');
+        return false;
       }
     } finally {
       setGeneratingCertificate(false);
     }
+    return false;
   };
 
   const handleViewCertificate = async () => {
@@ -256,7 +260,8 @@ export const CourseLearningPage = () => {
     try {
       // If no certificate yet, try to generate it first
       if (!hasCertificate) {
-        await generateCertificate();
+        const success = await generateCertificate();
+        if (!success) return; // Stop if generation failed
       }
       
       const response = await certificateService.viewCertificate(id);

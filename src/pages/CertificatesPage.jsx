@@ -8,7 +8,6 @@ import { PageLoader } from '../components/ui/Spinner';
 import { Alert } from '../components/ui/Alert';
 import { formatDate } from '../lib/utils';
 import { CertificateModal } from '../components/ui/CertificateModal';
-import { CertificateModal } from '../components/ui/CertificateModal';
 import { CardContainer, CardBody, CardItem } from '../components/ui/3DCard';
 
 export const CertificatesPage = () => {

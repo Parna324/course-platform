@@ -1,6 +1,7 @@
 import { Certificate } from '../model/certificate.model.js';
 import { Enrollment } from '../model/enrollment.model.js';
 import { Course } from '../model/course.model.js';
+import { Progress } from '../model/progress.model.js';
 import { generateCertificateId } from '../utils/certificateGenerator.js';
 import { generateCertificateHTML } from '../utils/certificateTemplate.js';
 import ApiResponse from '../utils/ApiResponse.js';
@@ -39,10 +40,10 @@ export const verifyCertificateJson = async (req, res) => {
     return res.json({
       success: true,
       certificate: {
-        user: { name: certificate.user.name },
+        user: { name: certificate.user?.name || 'Unknown User' },
         course: {
-          title: certificate.course.title,
-          instructor: { name: certificate.course.instructor.name },
+          title: certificate.course?.title || 'Unknown Course',
+          instructor: { name: certificate.course?.instructor?.name || 'Instructor' },
         },
         issuedAt: certificate.issuedAt,
         completionDate,
@@ -75,9 +76,21 @@ export const generateCertificate = async (req, res) => {
     }
 
     if (!enrollment.completed) {
-      return ApiResponse.badRequest(
-        'Course must be completed to generate certificate'
-      ).send(res);
+      // Double check progress just in case enrollment status is out of sync
+      const progress = await Progress.findOne({
+        user: req.user._id,
+        course: courseId,
+      });
+
+      if (progress && progress.progressPercentage === 100) {
+        // Sync enrollment status
+        enrollment.completed = true;
+        await enrollment.save();
+      } else {
+        return ApiResponse.badRequest(
+          'Course must be completed to generate certificate'
+        ).send(res);
+      }
     }
 
     // Check if certificate already exists
@@ -194,11 +207,11 @@ export const viewCertificate = async (req, res) => {
 
     // Return certificate data as JSON for frontend rendering
     const certificateData = {
-      userName: certificate.user.name,
-      courseTitle: certificate.course.title,
+      userName: certificate.user?.name || 'Unknown User',
+      courseTitle: certificate.course?.title || 'Unknown Course',
       completionDate: certificate.issuedAt,
       certificateId: certificate.certificateId,
-      instructorName: certificate.course.instructor.name,
+      instructorName: certificate.course?.instructor?.name || 'Instructor',
     };
 
     return ApiResponse.success(
@@ -259,11 +272,11 @@ export const verifyCertificate = async (req, res) => {
     );
 
     const html = generateCertificateHTML({
-      userName: certificate.user.name,
-      courseTitle: certificate.course.title,
+      userName: certificate.user?.name || 'Unknown User',
+      courseTitle: certificate.course?.title || 'Unknown Course',
       completionDate,
       certificateId: certificate.certificateId,
-      instructorName: certificate.course.instructor.name,
+      instructorName: certificate.course?.instructor?.name || 'Instructor',
     });
 
     res.setHeader('Content-Type', 'text/html');
@@ -308,11 +321,11 @@ export const downloadCertificatePDF = async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
     const data = {
-      userName: certificate.user.name,
-      courseTitle: certificate.course.title,
+      userName: certificate.user?.name || 'Unknown User',
+      courseTitle: certificate.course?.title || 'Unknown Course',
       completionDate,
       certificateId: certificate.certificateId,
-      instructorName: certificate.course.instructor.name,
+      instructorName: certificate.course?.instructor?.name || 'Instructor',
     };
 
     // Use the utility to stream PDF directly to response
